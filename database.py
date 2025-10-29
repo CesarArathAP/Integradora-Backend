@@ -19,7 +19,7 @@ if certifi:
 	client = MongoClient(MONGO_URL, tls=True, tlsCAFile=certifi.where())
 else:
 	# Si certifi no está instalado, intenta conexión por defecto.
-	# Si sigue fallando por TLS, instala certifi: pip install certifi
+	# Si sigue fallando por TLS, instala certifi: pip install certifi NO
 	client = MongoClient(MONGO_URL)
 
 # Selección de base de datos
