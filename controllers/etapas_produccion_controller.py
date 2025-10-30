@@ -6,16 +6,16 @@ from database import db
 etapas = db["etapas_produccion"]
 
 
-def _to_str(o: dict):
-    """Convierte ObjectId a str para campos conocidos antes de devolver."""
-    if not o:
+def _to_str(o):
+    """Convierte ObjectId a str en todo el documento, incluyendo listas y dicts anidados."""
+    if isinstance(o, ObjectId):
+        return str(o)
+    elif isinstance(o, dict):
+        return {k: _to_str(v) for k, v in o.items()}
+    elif isinstance(o, list):
+        return [_to_str(i) for i in o]
+    else:
         return o
-    o = dict(o)
-    if "_id" in o:
-        o["_id"] = str(o["_id"])
-    if "responsable" in o and isinstance(o["responsable"], ObjectId):
-        o["responsable"] = str(o["responsable"])
-    return o
 
 
 def crear_etapa(data: dict):
@@ -72,7 +72,13 @@ def actualizar_etapa(id: str, data: dict):
         except Exception:
             pass
 
-    result = etapas.update_one({"_id": ObjectId(id)}, {"$set": data})
+    # Detecta si el id es un ObjectId válido
+    try:
+        filtro = {"_id": ObjectId(id)}
+    except Exception:
+        filtro = {"_id": id}
+
+    result = etapas.update_one(filtro, {"$set": data})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Etapa no encontrada")
     return {"mensaje": "Etapa actualizada correctamente"}
@@ -86,3 +92,14 @@ def cerrar_etapa(id: str):
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Etapa no encontrada")
     return {"mensaje": "Etapa cerrada correctamente"}
+
+def eliminar_etapa(id: str):
+    # Intenta usar ObjectId, si falla usa el string
+    try:
+        filtro = {"_id": ObjectId(id)}
+    except Exception:
+        filtro = {"_id": id}
+    result = etapas.delete_one(filtro)
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Etapa no encontrada")
+    return {"mensaje": "Etapa eliminada correctamente"}

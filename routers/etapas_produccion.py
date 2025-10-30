@@ -1,3 +1,4 @@
+from bson import ObjectId
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from datetime import datetime
@@ -8,6 +9,7 @@ from controllers.etapas_produccion_controller import (
     obtener_etapas_por_id_lote,
     actualizar_etapa,
     cerrar_etapa,
+    eliminar_etapa
 )
 
 router = APIRouter(prefix="/etapas", tags=["Etapas Producción"])
@@ -51,3 +53,30 @@ def etapas_por_lote(id_lote: str):
     """
     etapas = obtener_etapas_por_id_lote(id_lote)
     return {"etapas": etapas}
+
+@router.put("/{id}", summary="Actualizar una etapa")
+def actualizar_etapa_endpoint(id: str, data: EtapaSchema):
+    """
+    Actualiza los datos de una etapa de producción.
+    """
+    result = actualizar_etapa(id, data.dict())
+    return result
+
+@router.delete("/{id}", summary="Eliminar una etapa")
+def eliminar_etapa_endpoint(id: str):
+    """
+    Elimina una etapa de producción por su ID.
+    """
+    from controllers.etapas_produccion_controller import etapas
+    from bson import ObjectId
+
+    # Intenta usar ObjectId, si falla usa el string como está
+    try:
+        filtro = {"_id": ObjectId(id)}
+    except Exception:
+        filtro = {"_id": id}
+
+    result = etapas.delete_one(filtro)
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Etapa no encontrada")
+    return {"mensaje": "Etapa eliminada correctamente"}
