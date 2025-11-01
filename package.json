@@ -1,0 +1,16 @@
+{
+  "name": "agrotech-api-node",
+  "version": "1.0.0",
+  "description": "API de AgroTech en Node.js/Express con MongoDB",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "body-parser": "^2.2.0",
+    "express": "^5.1.0",
+    "mongodb": "^6.20.0",
+    "mongoose": "^8.19.2"
+  }
+}
