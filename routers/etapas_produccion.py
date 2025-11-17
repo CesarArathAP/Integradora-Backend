@@ -17,6 +17,7 @@ router = APIRouter(prefix="/etapas", tags=["Etapas Producción"])
 # --- Esquemas ---
 class EtapaSchema(BaseModel):
     id_lote: str
+    nombre_lote: Optional[str] = ""
     etapa_principal: str
     nombre_sub_etapa: str
     fecha_inicio: Optional[datetime] = None
@@ -45,6 +46,16 @@ def listar_etapas():
     """
     lista = obtener_etapas()
     return {"etapas": lista}
+
+@router.get("/{id_lote}", summary="Obtener etapas por ID de lote")
+def obtener_etapas_por_lote_simple(id_lote: str):
+    """
+    Permite obtener las etapas usando directamente /etapas/{id_lote}
+    Ejemplo:
+      /etapas/INV-20251112-172919
+    """
+    etapas = obtener_etapas_por_id_lote(id_lote)
+    return {"etapas": etapas}
 
 @router.get("/lote/{id_lote}", summary="Listar etapas de un lote específico")
 def etapas_por_lote(id_lote: str):
