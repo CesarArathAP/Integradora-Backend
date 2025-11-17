@@ -23,6 +23,7 @@ def crear_etapa(data: dict):
     now = datetime.utcnow()
     doc = {}
     doc["id_lote"] = data.get("id_lote")
+    doc["nombre_lote"] = data.get("nombre_lote", "")
     doc["etapa_principal"] = data.get("etapa_principal")
     doc["nombre_sub_etapa"] = data.get("nombre_sub_etapa")
     # permitir que el cliente envíe fechas; si no vienen, usar now
