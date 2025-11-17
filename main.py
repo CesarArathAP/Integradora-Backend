@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import usuarios, etapas_produccion, insumos, invernaderos, lotes
+from routers import sincronizacion, usuarios, etapas_produccion, insumos, invernaderos, lotes, imagenes, reportes
 
-app = FastAPI(title="AgroTech API", version="1.0")
+app = FastAPI(title="Sistema Integral de Trazabilidad Agricola", version="1.0")
 
 # --- 🔓 Permitir peticiones desde cualquier origen (ideal para pruebas con Expo) ---
 app.add_middleware(
@@ -19,6 +19,9 @@ app.include_router(etapas_produccion.router)
 app.include_router(insumos.router)
 app.include_router(invernaderos.router)
 app.include_router(lotes.router)
+app.include_router(sincronizacion.router)
+app.include_router(imagenes.router)
+app.include_router(reportes.router)
 @app.get("/")
 def root():
-    return {"mensaje": "API de AgroTech funcionando correctamente"}
+    return {"mensaje": "API de Sistema de trazabilidad agricola funcionando correctamente"}
