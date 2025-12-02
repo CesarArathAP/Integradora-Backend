@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import sincronizacion, usuarios, etapas_produccion, insumos, invernaderos, lotes, imagenes, reportes
+from routers import sincronizacion, usuarios, etapas_produccion, insumos, invernaderos, lotes, imagenes, reportes, recetas
 
 app = FastAPI(title="Sistema Integral de Trazabilidad Agricola", version="1.0")
 
@@ -22,6 +22,7 @@ app.include_router(lotes.router)
 app.include_router(sincronizacion.router)
 app.include_router(imagenes.router)
 app.include_router(reportes.router)
+app.include_router(recetas.router)
 @app.get("/")
 def root():
     return {"mensaje": "API de Sistema de trazabilidad agricola funcionando correctamente"}
