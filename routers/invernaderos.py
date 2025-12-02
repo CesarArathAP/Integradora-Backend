@@ -59,3 +59,14 @@ def actualizar_invernadero_endpoint(invernadero_id: str, data: InvernaderoSchema
 @router.delete("/{invernadero_id}")
 def eliminar_invernadero_endpoint(invernadero_id: str):
     return eliminar_invernadero(invernadero_id)
+
+@router.get("/lote/{id_lote}/etapas")
+def obtener_etapas_por_lote(id_lote: str):
+    from controllers.invernaderos_controller import obtener_etapas_por_lote
+    return {"etapas": obtener_etapas_por_lote(id_lote)}
+
+@router.get("/etapas/catalogo")
+def obtener_catalogo_etapas():
+    from controllers.invernaderos_controller import obtener_catalogo_etapas
+    return {"etapas": obtener_catalogo_etapas()}
+

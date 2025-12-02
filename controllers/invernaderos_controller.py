@@ -76,6 +76,31 @@ def obtener_invernadero_por_lote(id_lote: str):
     
     return _to_str(invernadero)
 
+def obtener_etapas_por_lote(id_lote: str):
+    invernadero = invernaderos_collection.find_one(
+        {"id_lote": id_lote},
+        {"etapas_principales": 1, "_id": 0}  # ← Solo traer este campo
+    )
+
+    if not invernadero:
+        raise HTTPException(status_code=404, detail="Invernadero no encontrado")
+
+    return invernadero.get("etapas_principales", [])
+
+def obtener_catalogo_etapas():
+    cursor = invernaderos_collection.find({}, {"etapas_principales": 1})
+
+    etapas_set = set()
+
+    for doc in cursor:
+        etapas = doc.get("etapas_principales", [])
+        if isinstance(etapas, list):
+            for e in etapas:
+                etapas_set.add(e)
+
+    # Convertir set → lista ordenada
+    return sorted(list(etapas_set))
+
 def actualizar_invernadero(invernadero_id: str, data: dict):
     if "responsable" in data and data["responsable"]:
         try:
