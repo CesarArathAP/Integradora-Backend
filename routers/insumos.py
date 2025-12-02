@@ -8,27 +8,36 @@ from controllers.insumos_controller import (
     obtener_insumo_por_id,
     actualizar_insumo,
     eliminar_insumo,
-    descontar_stock  # 🔹 importar la nueva función
+    descontar_stock,  # ya existente
+    # 🔹 nueva función
+    agregar_stock
 )
 
 router = APIRouter(prefix="/insumos", tags=["Insumos"])
 
 # --- Schemas ---
 class InsumoSchema(BaseModel):
-    id_invernadero: str
-    id_etapa: str
     nombre: str
     tipo: str
-    cantidad: float
-    unidad: str
-    fecha_aplicacion: Optional[datetime] = None
-    responsable: Optional[str] = None
-    observaciones: Optional[str] = ""
-    stock_disponible: float = 0
+    composicion: str                    # ⬅️ antes dict ⛔
+    presentacion: str
+    unidadMedida: str
+    proveedor: str
+    fechaCaducidad: str                 # ⬅️ antes datetime ⛔
+    stock: Optional[float] = 0
+    precioUnitario: str                 # ⬅️ antes float ⛔
+    lotesAplicados: list = []
+    observaciones: Optional[str] = None
+
 
 class DescontarStockSchema(BaseModel):
     insumo_id: str
     cantidad_usada: float
+
+# 🔹 Nuevo schema para agregar stock
+class AgregarStockSchema(BaseModel):
+    insumo_id: str
+    cantidad_agregada: float
 
 # --- Endpoints ---
 @router.post("/")
@@ -50,13 +59,17 @@ def obtener_insumo(insumo_id: str):
 
 @router.put("/{insumo_id}")
 def actualizar_insumo_endpoint(insumo_id: str, data: InsumoSchema):
-    return actualizar_insumo(insumo_id, data.dict())
+    return actualizar_insumo(insumo_id, data.dict(exclude_unset=True))
 
 @router.delete("/{insumo_id}")
 def eliminar_insumo_endpoint(insumo_id: str):
     return eliminar_insumo(insumo_id)
 
-# 🔹 Nuevo endpoint para descontar stock
+# --- Endpoints de stock ---
 @router.post("/descontar/")
 def descontar_stock_endpoint(data: DescontarStockSchema):
     return descontar_stock(data.insumo_id, data.cantidad_usada)
+
+@router.post("/agregar/")
+def agregar_stock_endpoint(data: AgregarStockSchema):
+    return agregar_stock(data.insumo_id, data.cantidad_agregada)
