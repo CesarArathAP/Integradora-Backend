@@ -2,7 +2,7 @@ from bson import ObjectId
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from datetime import datetime
-from typing import List, Optional
+from typing import Dict, Any, Optional, List
 from controllers.etapas_produccion_controller import (
     crear_etapa,
     obtener_etapas,
@@ -16,19 +16,27 @@ router = APIRouter(prefix="/etapas", tags=["Etapas Producción"])
 
 # --- Esquemas ---
 class EtapaSchema(BaseModel):
+    id_invernadero: str
+    nombre_invernadero: str
     id_lote: str
-    nombre_lote: Optional[str] = ""
     etapa_principal: str
-    nombre_sub_etapa: str
-    fecha_inicio: Optional[datetime] = None
-    fecha_fin: Optional[datetime] = None
+    sub_etapa: str
+
+    fecha_aplicacion: Optional[datetime] = None
+    fecha_sincronizacion: Optional[datetime] = None
+    timestamp: Optional[int] = None
+
     descripcion: Optional[str] = ""
-    responsable: Optional[str] = None
-    insumos_utilizados: List[dict] = []
-    evidencias: List[dict] = []
+    responsable: Optional[str] = ""
     observaciones: Optional[str] = ""
-    cantidad_cosechada: int = 0
-    unidad_cosecha: Optional[str] = ""
+
+    insumo_aplicado: Dict[str, Any] = {}
+
+    cantidad_cosechada: Optional[float] = None
+    unidad_cosecha: Optional[str] = None
+
+    evidencia: Optional[Any] = None
+
 
 # --- Endpoints ---
 @router.post("/", summary="Crear una nueva etapa")

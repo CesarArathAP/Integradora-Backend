@@ -19,37 +19,37 @@ def _to_str(o):
 
 
 def crear_etapa(data: dict):
-    # Acepta campos nuevos y aplica defaults
-    now = datetime.utcnow()
-    doc = {}
-    doc["id_lote"] = data.get("id_lote")
-    doc["nombre_lote"] = data.get("nombre_lote", "")
-    doc["etapa_principal"] = data.get("etapa_principal")
-    doc["nombre_sub_etapa"] = data.get("nombre_sub_etapa")
-    # permitir que el cliente envíe fechas; si no vienen, usar now
-    doc["fecha_inicio"] = data.get("fecha_inicio") or now
-    doc["fecha_fin"] = data.get("fecha_fin")
-    doc["descripcion"] = data.get("descripcion", "")
-    # responsable puede ser id string; convertir a ObjectId si es válido
-    responsable = data.get("responsable")
-    if responsable:
-        try:
-            doc["responsable"] = ObjectId(responsable)
-        except Exception:
-            # si no es un ObjectId válido, guardarlo tal cual
-            doc["responsable"] = responsable
-    else:
-        doc["responsable"] = None
+    """Crea una etapa EXACTA al formato de Mongo recibido desde la app."""
 
-    doc["insumos_utilizados"] = data.get("insumos_utilizados", [])
-    doc["evidencias"] = data.get("evidencias", [])
-    doc["observaciones"] = data.get("observaciones", "")
-    doc["cantidad_cosechada"] = data.get("cantidad_cosechada", 0)
-    doc["unidad_cosecha"] = data.get("unidad_cosecha", "")
+    doc = {
+        "id_invernadero": data.get("id_invernadero"),
+        "nombre_invernadero": data.get("nombre_invernadero"),
+        "id_lote": data.get("id_lote"),
+        "etapa_principal": data.get("etapa_principal"),
+        "sub_etapa": data.get("sub_etapa"),
+
+        # fechas y timestamp
+        "fecha_aplicacion": data.get("fecha_aplicacion") or datetime.utcnow(),
+        "fecha_sincronizacion": data.get("fecha_sincronizacion") or datetime.utcnow(),
+        "timestamp": data.get("timestamp") or int(datetime.utcnow().timestamp() * 1000),
+
+        "descripcion": data.get("descripcion", ""),
+        "responsable": data.get("responsable", ""),
+        "observaciones": data.get("observaciones", ""),
+
+        # insumo aplicado como objeto
+        "insumo_aplicado": data.get("insumo_aplicado", {}),
+
+        # cosecha
+        "cantidad_cosechada": data.get("cantidad_cosechada"),
+        "unidad_cosecha": data.get("unidad_cosecha"),
+
+        # evidencia (base64 o null)
+        "evidencia": data.get("evidencia")
+    }
 
     result = etapas.insert_one(doc)
-    return {"mensaje": "Etapa registrada", "id": str(result.inserted_id)}
-
+    return {"mensaje": "Etapa registrada correctamente", "id": str(result.inserted_id)}
 
 def obtener_etapas():
     lista = []
