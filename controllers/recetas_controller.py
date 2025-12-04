@@ -64,14 +64,7 @@ def actualizar_estado_receta(receta_id: str, nuevo_estado: str):
     if not receta:
         raise HTTPException(status_code=404, detail="Receta no encontrada")
 
-    catalogo_estados = receta.get("estados", [])
-
-    if nuevo_estado not in catalogo_estados:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Estado inválido. Opciones disponibles: {catalogo_estados}"
-        )
-
+    # Actualizar solo el estado
     recetas_collection.update_one(
         {"_id": ObjectId(receta_id)},
         {"$set": {"estado": nuevo_estado}}
