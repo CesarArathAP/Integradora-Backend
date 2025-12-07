@@ -12,9 +12,10 @@ class LoginSchema(BaseModel):
 class UsuarioSchema(BaseModel):
     nombre: str
     correo: str
-    password_hash: str
+    password: str
     rol: str
     estado: str
+
 
 # --- Endpoints ---
 @router.post("/login", summary="Login de usuario")

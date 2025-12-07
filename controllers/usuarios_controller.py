@@ -26,8 +26,12 @@ def login_usuario(correo: str, password: str):
 
 def registrar_usuario(data: dict):
     data["fecha_registro"] = datetime.utcnow()
-    # Truncar la contraseña a 72 caracteres para bcrypt
-    password_trunc = data["password_hash"][:72]
+
+    password_trunc = data["password"][:72]
     data["password_hash"] = pwd_context.hash(password_trunc)
+
+    del data["password"]
+
     result = usuarios.insert_one(data)
     return {"mensaje": "Usuario registrado", "id": str(result.inserted_id)}
+
